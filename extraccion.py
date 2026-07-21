@@ -1,4 +1,5 @@
 # CODIGO 2 #
+# modificado #
 
 # EXTRACCION DE CARACTERISTICAS + NORMALIZACION
 # Las caracterisitcas se sacan directamente desde librosa, entonces es 100% confiable
@@ -14,6 +15,7 @@
 # Se calcula UNA sola STFT por audio
 # y se reutiliza para todas las caracteristicas.
 
+# !!! Se le implemento la etiqueta numerica
 
 import os
 import gc
@@ -23,11 +25,11 @@ import pandas as pd
 
 from sklearn.preprocessing import MinMaxScaler
 
-RUTA_CSV = r"C:\Users\manue\Downloads\3ccbe\Proyecto_final\filtrado10s.csv"
+RUTA_CSV = r"C:\Users\manue\Downloads\3ccbe\Proyecto_final\Filtracion 1\5aves.csv"
 
-SALIDA_BRUTO = r"C:\Users\manue\Downloads\3ccbe\Proyecto_final\CARACT_BRUTO.csv"
+SALIDA_BRUTO = r"C:\\Users\\manue\\Downloads\\3ccbe\\Proyecto_final\\Filtracion 2\\CARACT_BRUTO.csv"
 
-SALIDA_NORMALIZADO = r"C:\Users\manue\Downloads\3ccbe\Proyecto_final\CARACT_NORMALIZADO.csv"
+SALIDA_NORMALIZADO = r"C:\\Users\\manue\\Downloads\\3ccbe\\Proyecto_final\\Filtracion 1\\5avescaracteristicas.csv"
 
 # Parte 1 - EXTRACCION CARACTERISTICAS #
 
@@ -156,6 +158,20 @@ columnas_caracteristicas = [
 scaler = MinMaxScaler()
 df_norm[columnas_caracteristicas] = scaler.fit_transform(df_norm[columnas_caracteristicas])
 df_norm.to_csv(SALIDA_NORMALIZADO,index=False)
+
+from sklearn.preprocessing import LabelEncoder
+
+label_encoder = LabelEncoder()
+
+df_norm["label"] = label_encoder.fit_transform(df_norm["scientific_name"])
+
+# mover la columna label a la posición 2
+label_col = df_norm["label"]
+df_norm = df_norm.drop(columns=["label"])
+df_norm.insert(loc=2, column="label", value=label_col)
+
+# Guardar CSV final
+df_norm.to_csv(SALIDA_NORMALIZADO, index=False)
 
 print("\n" + "=" * 60)
 print("REPORTE FINAL")
